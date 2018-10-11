@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-
+from user import views
+from user import views
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r"^user/", include("user.urls", namespace="user")),
+    url(r'^register$', views.Register.as_view(), name='register'),
+    url(r'^login$', views.Login.as_view(), name='login'),
+    url(r'^register_verifyn$', views.Register_verify.as_view(), name='Register_verify'),
 ]
