@@ -1,3 +1,4 @@
+
 """
 Django settings for dailyfresh project.
 
@@ -100,7 +101,8 @@ USE_I18N = True
 USE_L10N = True
 
 # USE_TZ = True
-
+#设置字体
+FONT_STYLE = "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -112,3 +114,19 @@ STATICFILES_DIRS = [
 ]
 #配置django认证系统使用的模型类
 AUTH_USER_MODEL='user.User'
+
+#配置邮箱
+EMAIL_BACKEN ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.163.com" # 服务器
+EMAIL_PORT = 25    # 一般情况下都为25
+EMAIL_HOST_USER = "17630057379@163.com" # 账号
+EMAIL_HOST_PASSWORD = "z173275" # 密码
+# EMAIL_USE_TLS = False    # 一般都为False
+EMAIL_FROM = '天天生鲜<17630057379@163.com>' # 邮箱来自
+#配置redis
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS_HOST = '192.168.12.166'
+SESSION_REDIS_PORT = 6379
+SESSION_REDIS_DB = 0
+SESSION_REDIS_PASSWORD = ''
+SESSION_REDIS_PREFIX = 'session'

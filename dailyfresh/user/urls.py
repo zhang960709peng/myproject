@@ -21,4 +21,7 @@ urlpatterns = [
     url(r'^register$', views.Register.as_view(), name='register'),
     url(r'^login$', views.Login.as_view(), name='login'),
     url(r'^register_verifyn$', views.Register_verify.as_view(), name='Register_verify'),
+    url(r'^validate_code',views.validate_code,name='validate_code'),
+    url(r'^email$',views.email,name='email'),
+    url(r'^active/(?P<token>.*)$',views.ActiveView.as_view(),name='active')
 ]
