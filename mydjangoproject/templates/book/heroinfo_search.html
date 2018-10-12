@@ -1,0 +1,46 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hero_info_search.html</title>
+    <style type="text/css">
+
+    </style>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script>
+        $(function () {
+
+            $('#hname').keyup(function () {
+                $.ajax({
+                    'url': '/heroinfo_search_handler',
+                    'data': {
+                        'hname': $('#hname').val().trim()
+                    },
+                    'success': function (data) {
+                        ret = data['ret']
+                        console.info(ret)
+                        $('#show ul').html('')
+                        if (ret.length != 0) {
+                            ret.forEach(function (value) {
+                                console.info(value['hname'])
+                                $('#show ul').append("<li>" + value['hname'] + "</li>")
+                            })
+                        }else{
+                            $('#show ul').append("<li>无</li>")
+                        }
+                    },
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+<input type="text" id="hname">
+<div id="show">
+    <ul style="list-style: none">
+
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+
+        var btn1
+        var msg
+        var csrf
+        var xmlhttp
+
+
+        function func1() {
+            //获取XMLHTTPRequest对象
+
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+            }
+            else {
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            //注册监听事件
+            xmlhttp.onreadystatechange = callback
+            //open
+            xmlhttp.open("get", "/test?a=1&b=2")
+            //send
+            xmlhttp.send()
+
+        }
+
+        function callback() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                msg.innerHTML = "success"
+                console.info(xmlhttp.responseText)
+            }
+        }
+
+
+        window.onload = function () {
+            btn1 = document.getElementById("btn1")
+            msg = document.getElementById("msg")
+            csrf = document.getElementsByName("csrfmiddlewaretoken")[0]
+            btn1.onclick = func1
+        }
+    </script>
+</head>
+<body>
+<input type="button" value="btn1" id="btn1"/>
+<div id="msg"></div>
+{% csrf_token %}
+</body>
+</html>

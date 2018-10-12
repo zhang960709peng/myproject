@@ -1,0 +1,106 @@
+{% extends "book/base.html" %}
+{% load static from staticfiles %}
+{% block head %}
+    <script type="text/javascript">
+        $(function () {
+            //请求第一页
+            page(1)
+            $('tfoot td').delegate('a', 'click', function () {
+                page($(this).attr('href'))
+                return false
+            })
+            //分页事件
+            {#            $('table tfoot a').click(function () {#}
+            {#                page($('toot td').delegate('a').click)#}
+            {#                return false#}
+            {#            })#}
+            {#        })#}
+        })
+
+        //分页方法
+        function page(pn) {
+            $.ajax({
+                'url': '{% url 'book:hero_page' %}',
+                'data': {
+                    'pn': pn
+                },
+                'success': function (data) {
+                    hero_list = eval("(" + data['heroinfo_list'] + ")")
+                    console.info(hero_list)
+                    page_range = (data['page_range'])
+                    page_now = data['page_now']
+                    page_next = data['page_next']
+                    console.info(page_now)
+                    console.info(page_range)
+                    var btr = ''
+                    hero_list.forEach(function (value, index) {
+                        btr += "<tr><td><a href='/heroinfo/" + value.pk + "'>" + value.fields.hname + "</a></td>"
+                        btr += "<td><a href='/heroinfo/edit?hid=" + value.pk + "'>" + "edit" + "</a></td></tr>"
+
+                    })
+                    $('tbody td').html(btr)
+                    $('tfoot td').html('')
+                    var page_pr = page_now - 1
+                    if (page_now == 1) {
+                        $('tfoot td').append("<span>" + '上一页' + "</span>")
+                    }
+                    else {
+                        $('tfoot td').append("<a href='" + page_pr + "'>" + '上一页' + "</a>")
+                    }
+                    page_range.forEach(function (value) {
+                        console.info(value)
+                        if (value == page_now) {
+                            $('tfoot td').append("<span>" + value + "</span>")
+                        } else {
+                            $('tfoot td').append("<a href='" + value + "'><span>" + value + "</span></a>")
+                        }
+                    })
+                    console.info(page_now)
+                    if (page_now == page_range.length) {
+                        $('tfoot td').append("<span>" + '下一页' + "</span>")
+                    }
+                    else {
+
+                        $('tfoot td').append("<a href='" + page_next + "'>" + '下一页' + "</a>")
+                    }
+                },
+                "beforeSend":function () {
+                    $("#msg").html("获取数据中...")
+                }
+
+
+            })
+        }
+    </script>
+{% endblock head %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+
+
+    {% load static from staticfiles %}
+    <img src="{% static 'images/02.jpeg' %}" width="100"/>
+    <div id="msg"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <td>姓名</td>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr>
+            <td></td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td></td>
+        </tr>
+        </tfoot>
+    </table>
+    <div>
+        <a href="{% url "book:hero_insert" %}">新增</a>
+    </div>
+{% endblock content %}

@@ -1,0 +1,32 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'js/myjs.js'%}"></script>
+    <script>
+        var btn1
+        window.onload = function () {
+            btn1 = document.getElementById("btn1")
+            btn1.onclick = function () {
+                my_ajax(url="/test?name=laowang&pwd=123456",success_callback=function (xmlhttp) {
+                    alert(xmlhttp.responseText)
+                },fail_callback=function (xmlhttp) {
+                    alert("error")
+                })
+
+                my_ajax(url="/test",success_callback=function (xmlhttp) {
+                    alert(xmlhttp.responseText)
+                },fail_callback=function (xmlhttp) {
+                    alert("error")
+                },method="post",params="name=laowang2&pwd=123456&csrfmiddlewaretoken="+document.getElementsByName("csrfmiddlewaretoken")[0].value)
+            }
+        }
+    </script>
+</head>
+<body>
+<input type="button" value="btn1" id="btn1"/>
+{% csrf_token %}
+</body>
+</html>

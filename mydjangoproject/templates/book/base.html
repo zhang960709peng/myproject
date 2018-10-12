@@ -1,0 +1,17 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock title%}</title>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    {% block head %}{% endblock head %}
+</head>
+<body>
+    <h1>
+        welcome...{{ user_name }}|<a href="{% url 'user:logout' %}">安全退出</a>
+    </h1>
+    <hr/>
+    {% block content%}{% endblock content%}
+</body>
+</html>

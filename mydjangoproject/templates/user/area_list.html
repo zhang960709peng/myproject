@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <ul>
+    {% for i in area_list%}
+        <li><a href="{% url "user:select_area_by_id" i.id %}">{{ i.name }}</a></li>
+        {% empty %}
+        <li>无</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

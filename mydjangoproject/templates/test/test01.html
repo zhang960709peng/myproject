@@ -1,0 +1,48 @@
+{% load mytags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test01.html</title>
+</head>
+<body>
+    {{ k1 }}
+    <hr/>
+    {{ k2.name }}|{{ k2.get_name}}
+    <hr/>
+    {{ k3.a }}
+    <hr/>
+    {{ k3.c }}
+     <hr/>
+    {{ k4.0 }}
+    <hr/>
+    <ul>
+    {% for i in k5 %}
+        <li>{{ forloop.counter }}-{{ i.name }}</li>
+    {% empty %}
+        <li>无</li>
+    {% endfor %}
+    </ul>
+    <!--<hr/>-->
+{#    <hr/>#}
+    {% comment %}
+    {% if k4.0 >100 %}
+        <h1>if...</h1>
+    {% else %}
+        <h1>else...</h1>
+    {% endif %}
+    {% endcomment %}
+    <hr/>
+    {% include "test/test02.html" %}
+    <hr/>
+    {{ k5|length }}
+    <hr/>
+    {{ k4.0|add:100 }}
+    <hr/>
+    {{ k44|default:"无" }}|{{ k6|default:"无" }}|{{ False|default:"无" }}
+    <hr>
+    {{ title|slice:"0:10" }}|{{ title|myslice }}|{{ "abc"|myslice }}|{{ title|myslice2:6 }}
+    <hr>
+    {{ 10|mysum:"1,2,3,4,5" }}|{{ 20|mysum:"1,2,3,4,5,6,7" }}
+</body>
+</html>

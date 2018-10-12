@@ -1,0 +1,33 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>three.html</title>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+           get_province()
+        })
+        function get_province() {
+             $.ajax({
+                'url':'/three/select_all_province',
+                'success':function (data) {
+                    province_list=eval('('+data.province+')')
+                    $.each(province_list,function (index,item) {
+                        var option='<option vaue="'+item.pk+'>"'+item.fields.pname+'</option>';
+                        $('#Province').append(option)
+                    })
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div>
+    <select><option id="Province" value="0">-----</option></select>
+    <select><option id="City" value="0">-----</option></select>
+    <select><option id="Area" value="0">-----</option></select>
+</div>
+</body>
+</html>

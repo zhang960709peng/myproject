@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title%}base{% endblock title%}</title>
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        #container{
+            width: 980px;
+            margin: 0 auto;
+        }
+        #top{
+            background-color: antiquewhite;
+            height: 150px;
+        }
+        #middle{
+            background-color: burlywood;
+            height: 600px;
+        }
+        #bottom{
+            background-color: aqua;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="top">
+            固定-华丽的top
+        </div>
+        <div id="middle">
+            {% block  middle%}
+                默认的middle
+            {% endblock middle%}
+        </div>
+        <div id="bottom">
+            固定-华丽的bottom
+        </div>
+    </div>
+</body>
+</html>

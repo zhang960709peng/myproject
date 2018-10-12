@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>book_detail.html</title>
+</head>
+<body>
+    <table border="1" width="500">
+        <tr>
+            <td>书名</td>
+            <td>{{ bookinfo.btitle }}</td>
+        </tr>
+        <tr>
+            <td>出版日期</td>
+            <td>{{ bookinfo.bpubdate|date:"Y-m-d H:i:s" }}</td>
+        </tr>
+    </table>
+</body>
+</html>

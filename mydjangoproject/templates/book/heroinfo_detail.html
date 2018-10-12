@@ -1,0 +1,43 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>heroinfo_detail.html</title>
+</head>
+<body>
+    <table border="1" width="500">
+        <tr>
+            <td>名字</td>
+            <td>{{ heroinfo.hname }}</td>
+        </tr>
+        <tr>
+            <td>性别</td>
+            <td>{{ heroinfo.sex }}</td>
+        </tr>
+        <tr>
+            <td>简介</td>
+            <td>{{ heroinfo.hcontent|safe }}</td
+        </tr>
+        <tr>
+            <td>所属书</td>
+            <td>{{ heroinfo.hbookinfo.btitle }}</td>
+        </tr>
+        <tr>
+            <td>图片</td>
+            <td><img width="100" src="{% static 'media/'%}{{ heroinfo.hpic }}"></td>
+        </tr>
+        <tr>
+            <td>是否删除</td>
+            <td>
+                {% if  heroinfo.isdelete %}
+                    已删除
+                {% else %}
+                    未删除
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+

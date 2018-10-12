@@ -1,0 +1,87 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>heroinfo_edit_insert.html</title>
+</head>
+<body>
+
+{#{% if heroinfo%}#}
+{#{% else %}#}
+{#{% endif %}#}
+
+    {% if heroinfo%}
+        <form action="{% url 'book:hero_edit_handler' %}" method="post" enctype="multipart/form-data">
+            <input type="hidden" value="{{ heroinfo.id }}" name="hid"/>
+    {% else %}
+        <form action="{% url 'book:hero_insert_handler' %}" method="post" enctype="multipart/form-data">
+    {% endif %}
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>名字</td>
+                <td>
+                    <input name="hname" value="{{ heroinfo.hname }}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>性别</td>
+                <td>
+                    {% if heroinfo.hgender %}
+                        <input type="radio" value="1" name="hgender" checked/>男
+                        <input type="radio" value="0" name="hgender"/>女
+                    {% else %}
+                        <input type="radio" value="1" name="hgender" />男
+                        <input type="radio" value="0" name="hgender" checked/>女
+                    {% endif %}
+
+                </td>
+            </tr>
+            <tr>
+                <td>简介</td>
+                <td>
+                    <textarea name="hcontent">{{ heroinfo.hcontent }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>所属书</td>
+                <td>
+                    <select name="hbookinfo_id">
+                    {% for i in book_list %}
+                        {% if heroinfo.hbookinfo_id == i.id %}
+                            <option value="{{i.id}}" selected>{{ i.btitle }}</option>
+                        {% else %}
+                            <option value="{{i.id}}">{{ i.btitle }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            {% if heroinfo%}
+            <form action="{% url 'book:hero_edit_handler' %}" method="post">
+                <input type="hidden" value="{{ heroinfo.id }}" name="hid"/>
+
+            <tr>
+                <td>是否删除</td>
+                <td>
+                    <input type="checkbox" value="1" name="isdelete" {% if heroinfo.isdelete %}checked{% endif %}/>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>图片</td>
+                <td>
+                    <img width="100" src="{% static 'media/'%}{{ heroinfo.hpic }}">
+                    <input name="hpic" type="file" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

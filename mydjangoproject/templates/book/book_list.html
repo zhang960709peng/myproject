@@ -1,0 +1,14 @@
+{% extends "book/base.html" %}
+
+{% block title %}{{ title }}{% endblock title%}
+
+{% block content%}
+    <table>
+        {% for i in book_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url "book:book_select_by_id" i.id %}">{{ i.btitle }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock content%}

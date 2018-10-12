@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>heroinfo_detail.html</title>
+</head>
+<body>
+    <form action="{% url 'book:hero_insert_handler' %}" method="post">
+        <table>
+            <tr>
+                <td>名字</td>
+                <td>
+                    <input name="hname"/>
+                </td>
+            </tr>
+            <tr>
+                <td>性别</td>
+                <td>
+                    <input type="radio" value="1" name="hgender" checked/>男
+                    <input type="radio" value="0" name="hgender"/>女
+                </td>
+            </tr>
+            <tr>
+                <td>简介</td>
+                <td>
+                    <input name="hcontent"/>
+                </td>
+            </tr>
+            <tr>
+                <td>所属书</td>
+                <td>
+                    <select name="hbookinfo_id">
+                    {% for i in book_list %}
+                        <option value="{{i.id}}">{{ i.btitle }}</option>
+                    {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>图片</td>
+                <td>
+                    <input name="hpic" type="file"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

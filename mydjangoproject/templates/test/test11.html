@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+       obj = {
+            "employees": [{
+                    "firstName": "Bill",
+                    "lastName": "Gates"
+                },
+                {
+                    "firstName": "George",
+                    "lastName": "Bush"
+                },
+                {
+                    "firstName": "Thomas",
+                    "lastName": "Carter"
+                }
+            ]
+        }
+        console.info(typeof obj)
+        console.info(obj["employees"][1]["lastName"])
+
+
+
+        function f1(a,b) {
+            console.info(a,b)
+        }
+        f1(a=1,b=2)
+
+        function f2(obj) {
+            console.info(obj["a"],obj["b"])
+        }
+        f2({"a":1,"b":2})
+    </script>
+</head>
+<body>
+</body>
+</html>

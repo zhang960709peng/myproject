@@ -1,0 +1,48 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+    <script>
+        $(function () {
+            $("#btn1").click(function () {
+                $.ajax({
+                    "url": "{% url 'book:test1' %}",
+                    "type": "get",
+                    "success": function (data) {
+                       $("#msg").html(data)
+                    },
+                    "error":function (xhr,error_msg,err) {
+                        if(xhr.status==500){
+                             $("#msg").html("操作异常")
+                        }else if(xhr.status==404) {
+                            $("#msg").html("请求的内容不存在")
+                        }
+                    }
+                })
+
+                $.ajax({
+                    "url": "{% url 'book:test1' %}",
+                    "type": "post",
+                    "data":{
+                        "name":"laowang",
+                        "pwd":"123456",
+                        "csrfmiddlewaretoken":$("[name=csrfmiddlewaretoken]").val()
+
+                    },
+                    "success": function (data) {
+                       $("#msg").html(data)
+                    },
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+<input type="button" value="btn1" id="btn1"/>
+<div id="msg"></div>
+{% csrf_token %}
+</body>
+</html>

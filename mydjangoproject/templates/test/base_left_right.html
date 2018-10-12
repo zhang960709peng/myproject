@@ -1,0 +1,32 @@
+{% extends "test/base.html" %}
+
+{% block  middle%}
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        #left{
+            width: 20%;
+            height: 100%;
+            float: left;
+            background-color: burlywood;
+        }
+        #right{
+            width: 80%;
+            height: 100%;
+            float: left;
+            background-color: chartreuse;
+        }
+    </style>
+    <div id="left">
+        {% block left %}
+        左侧
+        {% endblock left %}
+    </div>
+    <div id="right">
+        {% block right %}
+        右侧
+        {% endblock right %}
+    </div>
+{% endblock middle%}

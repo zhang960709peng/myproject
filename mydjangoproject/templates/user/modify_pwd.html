@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login.html</title>
+</head>
+<body>
+    <form action="{% url "user:modify_pwd_handler" %}" method="post">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>新密码</td>
+                <td><input name="new_pwd"/></td>
+                <td><input type="submit"/></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

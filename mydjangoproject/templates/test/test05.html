@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+    {{ content }}
+    <hr/>
+    {{ content|safe }}
+    <hr/>
+    {{ content|escape }}
+    <hr/>
+    {% autoescape off %}
+        {{ content }}
+    {% endautoescape %}
+
+    <hr/>
+    {% autoescape on %}
+        {{ content }}
+    {% endautoescape %}
+
+    <hr/>
+
+    {{ name|default:"<h1>xx</h1>" }}
+    {{ name|default:"&lt;h1&gt;xx&lt;/h1&gt;"}}
+</body>
+</html>

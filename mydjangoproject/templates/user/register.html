@@ -1,0 +1,77 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register.html</title>
+    <script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+
+    <script>
+        $(function () {
+            $('#user_name').blur(function () {
+                $.ajax({
+                    'url':'/user/user_name_handler',
+                    'data':{
+                        'user_name':$('#user_name').val().trim()
+                    },
+                    'success':function (data) {
+                         if (data=='用户名已存在'){
+                             $('#user_name_result').text('用户名已存在')
+                         }
+                         else if (data=='用户名不能为空'){
+                             $('#user_name_result').text('用户名不能为空')
+                         }
+                        else {
+                             $('#user_name_result').text('用户名可用')
+                         }
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <form action="{% url "user:register_handler" %}" method="post">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>用户名</td>
+                <td><input id="user_name" name="user_name" value="{{ user_name }}"/></td>
+                <td id="user_name_result">{{ errors.user_name }}</td>
+            </tr>
+            <tr>
+                <td>密码</td>
+                <td><input name="user_pwd" type="password" value="{{ user_pwd }}"/></td>
+                <td>{{ errors.user_pwd }}</td>
+            </tr>
+            <tr>
+                <td colspan="3"><input type="submit"/></td>
+            </tr>
+        </table>
+    </form>
+{#    <hr>#}
+{#    <form action="/user/register_handler" method="get">#}
+{#        <table>#}
+{#            <tr>#}
+{#                <td>用户名</td>#}
+{#                <td><input name="user_name"/></td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td>密码</td>#}
+{#                <td><input name="user_pwd" type="password"/></td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td>爱好</td>#}
+{#                <td>#}
+{#                    <input type="checkbox" name="user_hobbies" value="eat"/>吃#}
+{#                    <input type="checkbox" name="user_hobbies" value="drink"/>喝#}
+{#                    <input type="checkbox" name="user_hobbies" value="sleep"/>睡#}
+{#                </td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td colspan="2"><input type="submit"/></td>#}
+{#            </tr>#}
+{#        </table>#}
+{#    </form>#}
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends "book/base.html" %}
+
+{% block title %}{{ title }}{% endblock title%}
+
+{% block content%}
+    <table>
+        {% for i in heroinfo_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url "book:hero_select_by_id" i.id %}">{{ i.hname }}</a></td>
+                <td><a href="{% url "book:hero_edit"%}?hid={{ i.id }}">edit</a></td>
+                <td><a href="{% url "book:hero_delete1"%}?hid={{ i.id }}">delete1</a></td>
+                <td><a href="{% url "book:hero_delete2"%}?hid={{ i.id }}">delete2</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div>
+        <a href="{% url "book:hero_insert" %}">新增</a>
+    </div>
+{% endblock content%}
