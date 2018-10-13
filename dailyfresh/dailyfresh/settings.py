@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
+    'goods'
 
 )
 
@@ -127,6 +128,6 @@ EMAIL_FROM = '天天生鲜<17630057379@163.com>' # 邮箱来自
 SESSION_ENGINE = 'redis_sessions.session'
 SESSION_REDIS_HOST = '192.168.12.166'
 SESSION_REDIS_PORT = 6379
-SESSION_REDIS_DB = 0
+SESSION_REDIS_DB = 2
 SESSION_REDIS_PASSWORD = ''
 SESSION_REDIS_PREFIX = 'session'

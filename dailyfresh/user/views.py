@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from user.models import User
+from django.http  import response
 from django.views.generic import View
 from PIL import Image, ImageDraw, ImageFont
 from django.core.urlresolvers import reverse
@@ -12,13 +13,17 @@ from io import BytesIO
 import re
 from dailyfresh import settings
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
+from celery_tasks.tasks import send_register_active_email
+from celery_tasks.tasks1 import send_update_password_email
 
 
 # Create your views here.
 class Register(View):
     def get(self, request):
         return render(request, 'dailyfresh/register.html')
-
+    @csrf_exempt
     def post(self, request):
         user_name = request.POST.get("user_name", '').strip().lower()
         user_pwd = request.POST.get("pwd", '').strip().lower()
@@ -55,7 +60,7 @@ class Register(View):
         token = serializers.dumps(info).decode()
 
         encryption_url = "http://192.168.12.166:8888/user/active/%s" % token
-        print(2)
+
 
         # 发邮件
         subject = '天天生鲜欢迎信息'  # 邮件主题
@@ -66,15 +71,44 @@ class Register(View):
         print(receiver)
         html_message = '<h1>%s,欢迎您成为天天生鲜注册会员</h1>请点击以下链接激活您的账户<br><a href="%s">%s</a>' % (
         user_name, encryption_url, encryption_url)
-        print(3)
-        send_mail(subject, message, sender, receiver, html_message=html_message)
-        print(4)
+
+        send_register_active_email.delay(subject, message, sender, receiver, html_message)
         return render(request, 'dailyfresh/login.html')
 
 
 class Login(View):
     def get(self, request):
-        return render(request, 'dailyfresh/login.html')
+        if 'username' in request.COOKIES:
+            username=request.COOKIES.get('username')
+            checked='checked'
+        else:
+            username=''
+            checked=''
+        return  render(request,'dailyfresh/login.html',{'username':username,'checked':checked})
+    def post(self,request):
+        username=request.POST.get('username')
+        userpwd=request.POST.get('pwd')
+
+        if not all([username,userpwd]):
+            return render(request,'dailyfresh/login.html',{'error':'用户数据不完整'})
+        user = authenticate(username=username, password=userpwd)
+        if user is not None:
+            # the password verified for the user
+            if user.is_active:
+                login(request,user)
+                response=redirect(reverse('goods:index'))
+                remember=request.POST.get('remember')
+                if remember=='on':
+                    response.set_cookie('username',username,max_age=7*24*3600)
+                else:
+                    response.delete_cookie('username')
+                return response
+            else:
+                return render(request, 'dailyfresh/login.html', {'error': '用户名未激活'})
+        else:
+            # the authentication system was unable to verify the username and password
+            return render(request,'dailyfresh/login.html',{'error':'用户名或密码有误'})
+
 
 
 class Register_verify(View):
@@ -146,6 +180,58 @@ class ActiveView(View):
             user_id=info['confirm']
             user=User.objects.get(id=user_id)
             user.is_active=1
+            user.save()
+            return  redirect(reverse('user:login'))
+        except SignatureExpired as e:
+            return HttpResponse('激活链接已过期')
+        except BadSignature as e:
+            return HttpResponse('激活链接非法')
+class Update_password(View):
+    def get(self,request):
+        return render(request,'dailyfresh/update_password.html')
+    def post(self,request):
+        username=request.POST.get('username').strip().lower()
+        useremail=request.POST.get('useremail').strip().lower()
+        userpwd=request.POST.get('password').strip().lower()
+
+        if not all([username,useremail]):
+            return render(request,'dailyfresh/update_password.html',{'error':'数据不完整'})
+        if not re.match('^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$', useremail):
+            return render(request, 'dailyfresh/update_password.html', {'errors': '邮箱地址不正确'})
+        if not User.objects.get(username=username):
+            return render(request,'dailyfresh/update_password.html',{'errors':'用户名不存在'})
+        '''发送激活邮件，也包含激活链接：http://ip:port/user/active/3
+                   激活链接中需要包含用户的身份信息，并且要把身份信息进行加密
+               '''
+        user=User.objects.get(username=username)
+        # 加密用户的身份信息，生成激活ｔｏｋｅｎ
+        serializers = tjwss(settings.SECRET_KEY, 3600)
+        info = {'confirm': user.id,'password':userpwd}
+        token = serializers.dumps(info).decode()
+
+        encryption_url = "http://192.168.12.166:8888/user/update_password1/%s" % token
+
+        # 发邮件
+        subject = '天天生鲜欢迎信息'  # 邮件主题
+        message = ''  # 文本内容
+        sender = settings.EMAIL_FROM  # 发件人
+
+        receiver = [useremail]  # 收件人
+
+        html_message = '<h1>%s,欢迎您</h1>请点击以下链接修改您的密码<br><a href="%s">%s</a>' % (
+            username, encryption_url, encryption_url)
+
+        send_update_password_email.delay(subject, message, sender, receiver, html_message)
+        return redirect('user:login')
+class Update_password1(View):
+    def get(self,request,token):
+        serializers=tjwss(settings.SECRET_KEY,3600)
+        try:
+            info=serializers.loads(token)
+            user_id=info['confirm']
+            userpwd=info['password']
+            user=User.objects.get(id=user_id)
+            user.set_password(userpwd)
             user.save()
             return  redirect(reverse('user:login'))
         except SignatureExpired as e:

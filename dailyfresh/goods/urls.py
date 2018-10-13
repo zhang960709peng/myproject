@@ -15,16 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from user import views
-from user import views
+from goods import views
+
 urlpatterns = [
-    url(r'^register$', views.Register.as_view(), name='register'),
-    url(r'^login$', views.Login.as_view(), name='login'),
-    url(r'^register_verifyn$', views.Register_verify.as_view(), name='Register_verify'),
-    url(r'^validate_code',views.validate_code,name='validate_code'),
-    url(r'^email$',views.email,name='email'),
-    url(r'^update_password$',views.Update_password.as_view(),name='update_password'),
-    url(r'^active/(?P<token>.*)$',views.ActiveView.as_view(),name='active'),
-    url(r'^update_password1/(?P<token>.*)$',views.Update_password1.as_view(),name='Update_password1'),
+    url(r'^index$', views.Index.as_view(), name='index'),
 
 ]
