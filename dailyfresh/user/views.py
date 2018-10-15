@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from celery_tasks.tasks import send_register_active_email
 from celery_tasks.tasks1 import send_update_password_email
+from util.user_util import LoginRequiredMixin
 
 
 # Create your views here.
@@ -84,19 +85,27 @@ class Login(View):
         else:
             username=''
             checked=''
-        return  render(request,'dailyfresh/login.html',{'username':username,'checked':checked})
+        return  render(request, 'dailyfresh/login.html', {'username':username, 'checked':checked})
     def post(self,request):
         username=request.POST.get('username')
         userpwd=request.POST.get('pwd')
-
+        # 获取属性
+        validate = request.POST.get("validate_code_input", "").strip().lower()
+        print(validate)
+        if validate != request.session.get("validate_code").lower():
+            return redirect(reverse("user:login"))
         if not all([username,userpwd]):
-            return render(request,'dailyfresh/login.html',{'error':'用户数据不完整'})
+            return render(request, 'dailyfresh/login.html', {'error': '用户数据不完整'})
         user = authenticate(username=username, password=userpwd)
         if user is not None:
             # the password verified for the user
             if user.is_active:
                 login(request,user)
-                response=redirect(reverse('goods:index'))
+                next_url=request.GET.get('next')
+                if next_url:
+                   return redirect(next_url)
+                else:
+                    response=redirect(reverse('goods:index'))
                 remember=request.POST.get('remember')
                 if remember=='on':
                     response.set_cookie('username',username,max_age=7*24*3600)
@@ -107,7 +116,7 @@ class Login(View):
                 return render(request, 'dailyfresh/login.html', {'error': '用户名未激活'})
         else:
             # the authentication system was unable to verify the username and password
-            return render(request,'dailyfresh/login.html',{'error':'用户名或密码有误'})
+            return render(request, 'dailyfresh/login.html', {'error': '用户名或密码有误'})
 
 
 
@@ -171,7 +180,7 @@ def email(request):
     sender = settings.EMAIL_FROM
     receiver = [email]
     send_mail(subject, message, sender, receiver)
-    return HttpResponse('ok')
+    return render(request,'dailyfresh/base.html')
 class ActiveView(View):
     def get(self,request,token):
         serializers=tjwss(settings.SECRET_KEY,3600)
@@ -192,7 +201,6 @@ class Update_password(View):
     def post(self,request):
         username=request.POST.get('username').strip().lower()
         useremail=request.POST.get('useremail').strip().lower()
-        userpwd=request.POST.get('password').strip().lower()
 
         if not all([username,useremail]):
             return render(request,'dailyfresh/update_password.html',{'error':'数据不完整'})
@@ -206,7 +214,7 @@ class Update_password(View):
         user=User.objects.get(username=username)
         # 加密用户的身份信息，生成激活ｔｏｋｅｎ
         serializers = tjwss(settings.SECRET_KEY, 3600)
-        info = {'confirm': user.id,'password':userpwd}
+        info = {'confirm': user.id}
         token = serializers.dumps(info).decode()
 
         encryption_url = "http://192.168.12.166:8888/user/update_password1/%s" % token
@@ -225,11 +233,18 @@ class Update_password(View):
         return redirect('user:login')
 class Update_password1(View):
     def get(self,request,token):
+        return render(request,'dailyfresh/update_new_password.html',{'token':token})
+class Update_password2(View):
+    def post(self,request):
+        token=request.POST.get('token')
+        print(0,token)
         serializers=tjwss(settings.SECRET_KEY,3600)
         try:
             info=serializers.loads(token)
             user_id=info['confirm']
-            userpwd=info['password']
+            print(1,user_id)
+            userpwd=request.POST.get('userpwd')
+            print(2,userpwd)
             user=User.objects.get(id=user_id)
             user.set_password(userpwd)
             user.save()
@@ -238,3 +253,28 @@ class Update_password1(View):
             return HttpResponse('激活链接已过期')
         except BadSignature as e:
             return HttpResponse('激活链接非法')
+class User_center_info(LoginRequiredMixin,View):
+    def get(self,request):
+        context={'page':'1'}
+        return render(request,'dailyfresh/user_center_info.html',context)
+
+class User_center_order(LoginRequiredMixin,View):
+    def get(self, request):
+        context = {'page': '2'}
+        return render(request, 'dailyfresh/user_center_order.html',context)
+class User_center_site(LoginRequiredMixin,View):
+    def get(self, request):
+        context = {'page': '3'}
+        return render(request, 'dailyfresh/user_center_site.html',context)
+class Cart(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'dailyfresh/cart.html')
+class List(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'dailyfresh/list.html')
+class Detail(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'dailyfresh/detail.html')
+class Place_order(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'dailyfresh/place_order.html')

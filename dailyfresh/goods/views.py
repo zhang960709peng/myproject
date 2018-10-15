@@ -14,7 +14,8 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from celery_tasks.tasks import send_register_active_email
+from util.user_util import LoginRequiredMixin
 # Create your views here.
-class Index(View):
+class Index(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/index.html')

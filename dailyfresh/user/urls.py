@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from user import views
 from user import views
+from django.contrib.auth.decorators import login_required
 urlpatterns = [
     url(r'^register$', views.Register.as_view(), name='register'),
     url(r'^login$', views.Login.as_view(), name='login'),
@@ -26,5 +27,13 @@ urlpatterns = [
     url(r'^update_password$',views.Update_password.as_view(),name='update_password'),
     url(r'^active/(?P<token>.*)$',views.ActiveView.as_view(),name='active'),
     url(r'^update_password1/(?P<token>.*)$',views.Update_password1.as_view(),name='Update_password1'),
+    url(r'^update_password2$',views.Update_password2.as_view(),name='update_password2'),
+    url(r'^$',views.User_center_info.as_view(),name='user_center_info'),
+    url(r'^user_center_order$',views.User_center_order.as_view(),name='user_center_order'),
+    url(r'^user_center_site$',views.User_center_site.as_view(),name='user_center_site'),
+    url(r'^cart$',views.Cart.as_view(),name='user_catrt'),
+    url(r'^list$',views.List.as_view(),name='user_List'),
+    url(r'^detail$',views.Detail.as_view(),name='user_detail'),
+    url(r'^place_order$',views.Place_order.as_view(),name='place_order'),
 
 ]
