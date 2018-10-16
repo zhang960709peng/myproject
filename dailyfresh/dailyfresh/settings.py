@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
-    'goods'
+    'goods',
+    'tinymce',
 
 )
 
@@ -133,3 +134,11 @@ SESSION_REDIS_PASSWORD = ''
 SESSION_REDIS_PREFIX = 'session'
 #配置登录页面
 LOGIN_URL='/user/login'
+#配置富文本编辑器
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}
+#上传文件存储的路径
+MEDIA_ROOT=os.path.join(BASE_DIR,"static/media")
