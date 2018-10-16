@@ -35,5 +35,7 @@ urlpatterns = [
     url(r'^list$',views.List.as_view(),name='user_List'),
     url(r'^detail$',views.Detail.as_view(),name='user_detail'),
     url(r'^place_order$',views.Place_order.as_view(),name='place_order'),
+    url(r'^loginout$',views.Loginout.as_view(),name='loginout'),
+
 
 ]

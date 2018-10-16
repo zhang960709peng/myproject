@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from user.models import User
+from user.models import User,Address
 from django.http  import response
 from django.views.generic import View
 from PIL import Image, ImageDraw, ImageFont
@@ -13,7 +13,7 @@ from io import BytesIO
 import re
 from dailyfresh import settings
 from django.core.mail import send_mail
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.views.decorators.csrf import csrf_exempt
 from celery_tasks.tasks import send_register_active_email
 from celery_tasks.tasks1 import send_update_password_email
@@ -174,13 +174,16 @@ def validate_code(request):
 
 
 def email(request):
-    email = '27409517@qq.com'
-    subject = '11'
-    message = '11'
+    email = '1430453115@qq.com'
+    subject = '您有一张自拍已上传,点击查看'
+    message=''
+    a='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1540211224&di=935842e0cfb4b31588aa7a96ecb50d00&imgtype=jpg&er=1&src=http%3A%2F%2Fimg1.sc115.com%2Fuploads%2Fsc%2Fjpg%2F144%2F18892.jpg'
+    html_message= '<h1>尊敬的王女士,您好/h1><br><a href="%s">点击链接,查看照片</a>'%a
     sender = settings.EMAIL_FROM
     receiver = [email]
-    send_mail(subject, message, sender, receiver)
-    return render(request,'dailyfresh/base.html')
+
+    send_mail(subject, message, sender, receiver,html_message=html_message)
+    return HttpResponse('ok')
 class ActiveView(View):
     def get(self,request,token):
         serializers=tjwss(settings.SECRET_KEY,3600)
@@ -264,8 +267,44 @@ class User_center_order(LoginRequiredMixin,View):
         return render(request, 'dailyfresh/user_center_order.html',context)
 class User_center_site(LoginRequiredMixin,View):
     def get(self, request):
-        context = {'page': '3'}
+        user=request.user
+        try:
+            address=Address.objects.filter(user=user)
+        except Address.DoesNotExist:
+            address=None
+
+        context = {'page': '3','address':address}
         return render(request, 'dailyfresh/user_center_site.html',context)
+    def post(self,request):
+        #获取传输值
+        receiver=request.POST.get('receiver')
+        addr=request.POST.get('addr')
+        zip_code=request.POST.get('zip_code')
+        phone=request.POST.get('phone')
+        is_default=request.POST.get('is_default')
+        print(receiver,addr,zip_code,phone,is_default)
+        #数据校验
+        if not all([receiver,addr,zip_code,phone]):
+            return render(request,'dailyfresh/user_center_site.html',{'error':'数据不完整'})
+        if not re.match('^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$',phone):
+            return render(request, 'dailyfresh/user_center_site.html', {'error': '手机号码不正确'})
+        #数据处理
+        user=request.user
+        print(user)
+        try:
+            address=Address.objects.get(user=user,is_default=True)
+        except Address.DoesNotExist:
+            address=None
+        if address:
+            is_default=False
+        else:
+            is_default=True
+        print(is_default)
+        #添加地址
+        Address.objects.create(user=user,receiver=receiver,addr=addr,zip_code=zip_code,phone=phone,is_default=is_default)
+        #返回应答,刷新页面
+        return redirect(reverse('user:user_center_site'))
+
 class Cart(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/cart.html')
@@ -278,3 +317,7 @@ class Detail(LoginRequiredMixin,View):
 class Place_order(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/place_order.html')
+class Loginout(LoginRequiredMixin,View):
+    def get(self,request):
+        logout(request)
+        return render(request,'dailyfresh/login.html')

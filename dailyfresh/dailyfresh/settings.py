@@ -123,7 +123,7 @@ EMAIL_PORT = 25    # 一般情况下都为25
 EMAIL_HOST_USER = "17630057379@163.com" # 账号
 EMAIL_HOST_PASSWORD = "z173275" # 密码
 # EMAIL_USE_TLS = False    # 一般都为False
-EMAIL_FROM = '天天生鲜<17630057379@163.com>' # 邮箱来自
+EMAIL_FROM = '美图网<17630057379@163.com>' # 邮箱来自
 #配置redis
 SESSION_ENGINE = 'redis_sessions.session'
 SESSION_REDIS_HOST = '192.168.12.166'
