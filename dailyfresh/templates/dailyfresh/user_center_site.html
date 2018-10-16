@@ -1,45 +1,95 @@
 {% extends 'dailyfresh/base_user_center.html' %}
+{% block topfile %}
+    <script src="/static/js/jquery-1.11.3.min.js"></script>
+    <script src="/static/js/area.js"></script>
+    {#    <script>#}
+    {#    $(function () {#}
+    {#        del()#}
+    {#    })#}
+    {#    function del() {#}
+    {#        $('.delete').onclick(function () {#}
+    {#            alert(1)#}
+    {#            $.ajax({#}
+    {#                'url':'/user/user_center_site_handler',#}
+    {#                'data':{#}
+    {#                    'a':'1',#}
+    {#                    'address_id':i.id#}
+    {#                },#}
+    {#                'success':function () {#}
+    {#                    window.location.reload()#}
+    {#                }#}
+    {#            })#}
+    {#        })#}
+    {#    }#}
+    {#    </script>#}
+{% endblock topfile %}
 {% block right_content %}
-		<div class="right_content clearfix">
-				<h3 class="common_title2">收货地址</h3>
-				<div class="site_con">
+    <div class="right_content clearfix">
+        <h3 class="common_title2">收货地址</h3>
+        <div class="site_con">
 
-					<dl>
-						<dt>当前地址：</dt>
-                        {% if address %}
-                            <dd>{{ address.addr }}（{{ address.receiver }} 收） {{ address.phone }}</dd>
-                        {% else  %}
-                            <dd>无默认地址</dd>
+            <dl>
+                <dt>当前地址：</dt>
+                {% if address %}
+                    {% for i in address %}
+                        {% if i.is_default %}
+                            <dd>{{ i.addr }}（{{ i.receiver }} 收） {{ i.phone }}&nbsp<span>默认地址</span>&nbsp|
+                                <a href="/user/user_center_site1?address_id={{ i.id }}">修改</a>|&nbsp
+                                <a href="{% url 'user:user_center_site_handler' %}?address_id={{ i.id }}&a=1">删除</a>|&nbsp
+                                <a href="{% url 'user:user_center_site_handler' %}?address_id={{ i.id }}&a=2">设为默认</a>
+                            </dd>
+                        {% else %}
+                            <dd>{{ i.addr }}（{{ i.receiver }} 收） {{ i.phone }}|&nbsp
+                                <a href="/user/user_center_site1/address_id={{ i.id }}">修改</a>|&nbsp
+                                <a href="{% url 'user:user_center_site_handler' %}?address_id={{ i.id }}&a=1">删除</a>|&nbsp
+                                <a href="{% url 'user:user_center_site_handler' %}?address_id={{ i.id }}&a=2">设为默认</a>
+                            </dd>
                         {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <dd>无默认地址</dd>
+                {% endif %}
 
-					</dl>					
-				</div>
-				<h3 class="common_title2">编辑地址</h3>
-				<div class="site_con">
-					<form method="post">
-                        {% csrf_token %}
-						<div class="form_group">
-							<label>收件人：</label>
-							<input type="text" name="receiver" value="">
-						</div>
-						<div class="form_group form_group2">
-							<label>详细地址：</label>
-							<textarea class="site_area" name="addr"></textarea>
-						</div>
-						<div class="form_group">
-							<label>邮编：</label>
-							<input type="text" name="zip_code">
-						</div>
-						<div class="form_group">
-							<label>手机：</label>
-							<input type="text" name="phone">
-						</div>
+            </dl>
+        </div>
+        <h3 class="common_title2">编辑地址</h3>
+        <div class="site_con">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form_group">
+                    <label>收件人：</label>
+                    <input type="text" name="receiver" value="">
+                </div>
+                <div class="form_three">
+                    <label>地址：</label>
+                    <select name="province" id="province">
+                        <option value="请选择省份"></option>
+                    </select>
+                    <select name="city" id="city">
+                        <option value="请选择城市"></option>
+                    </select>
+                    <select name="town" id="town">
+                        <option value="请选择县/区"></option>
+                    </select>
+                </div>
+                <div class="form_group form_group2">
+                    <label>详细地址：</label>
+                    <textarea class="site_area" name="addr"></textarea>
+                </div>
+                <div class="form_group">
+                    <label>邮编：</label>
+                    <input type="text" name="zip_code">
+                </div>
+                <div class="form_group">
+                    <label>手机：</label>
+                    <input type="text" name="phone">
+                </div>
 
-						<input type="submit" value="提交" class="info_submit">
-					</form>
-				</div>
-		</div>
-	</div>
+                <input type="submit" value="提交" class="info_submit">
+            </form>
+        </div>
+    </div>
+    </div>
     {{ error }}
 {% endblock right_content %}
 

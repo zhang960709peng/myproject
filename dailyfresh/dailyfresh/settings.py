@@ -107,7 +107,7 @@ FONT_STYLE = "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
+#配置静态文件
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [

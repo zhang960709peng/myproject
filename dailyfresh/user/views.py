@@ -258,31 +258,40 @@ class Update_password2(View):
             return HttpResponse('激活链接非法')
 class User_center_info(LoginRequiredMixin,View):
     def get(self,request):
-        context={'page':'1'}
-        return render(request,'dailyfresh/user_center_info.html',context)
+        user = request.user
+        try:
+            address = Address.objects.filter(user=user)
+        except Address.DoesNotExist:
+            address = None
+        context = {'page': '1', 'address': address}
+        return render(request, 'dailyfresh/user_center_info.html', context)
 
 class User_center_order(LoginRequiredMixin,View):
     def get(self, request):
         context = {'page': '2'}
         return render(request, 'dailyfresh/user_center_order.html',context)
-class User_center_site(LoginRequiredMixin,View):
+class User_center_site1(LoginRequiredMixin,View):
     def get(self, request):
         user=request.user
+        address_id = request.GET.get('address_id')
+        print(address_id)
         try:
-            address=Address.objects.filter(user=user)
+            address=Address.objects.get(user=user,id=address_id)
         except Address.DoesNotExist:
             address=None
-
         context = {'page': '3','address':address}
-        return render(request, 'dailyfresh/user_center_site.html',context)
+        return render(request, 'dailyfresh/user_center_site1.html',context)
     def post(self,request):
         #获取传输值
+        address_id=request.GET.get('address_id')
+        province=request.POST.get('province')
+        town=request.POST.get('town')
         receiver=request.POST.get('receiver')
         addr=request.POST.get('addr')
+        addr=province+town+addr
         zip_code=request.POST.get('zip_code')
         phone=request.POST.get('phone')
         is_default=request.POST.get('is_default')
-        print(receiver,addr,zip_code,phone,is_default)
         #数据校验
         if not all([receiver,addr,zip_code,phone]):
             return render(request,'dailyfresh/user_center_site.html',{'error':'数据不完整'})
@@ -290,7 +299,6 @@ class User_center_site(LoginRequiredMixin,View):
             return render(request, 'dailyfresh/user_center_site.html', {'error': '手机号码不正确'})
         #数据处理
         user=request.user
-        print(user)
         try:
             address=Address.objects.get(user=user,is_default=True)
         except Address.DoesNotExist:
@@ -299,11 +307,80 @@ class User_center_site(LoginRequiredMixin,View):
             is_default=False
         else:
             is_default=True
-        print(is_default)
+        if address_id:
+            address=Address.objects.get(id=address_id)
+            address.receiver=receiver
+            address.addr=addr
+            address.zip_code=zip_code
+            address.phone=phone
+            address.save()
+            return redirect(reverse('user:user_center_site'))
+        else:
+            #添加地址
+            Address.objects.create(user=user,receiver=receiver,addr=addr,zip_code=zip_code,phone=phone,is_default=is_default)
+            #返回应答,刷新页面
+            return redirect(reverse('user:user_center_site'))
+class User_center_site(LoginRequiredMixin,View):
+    def get(self, request):
+        user=request.user
+        try:
+            address=Address.objects.filter(user=user)
+        except Address.DoesNotExist:
+            address=None
+        context = {'page': '3','address':address}
+        return render(request, 'dailyfresh/user_center_site.html',context)
+    def post(self,request):
+        #获取传输值
+        province=request.POST.get('province')
+        town=request.POST.get('town')
+        receiver=request.POST.get('receiver')
+        addr=request.POST.get('addr')
+        addr=province+town+addr
+        zip_code=request.POST.get('zip_code')
+        phone=request.POST.get('phone')
+        is_default=request.POST.get('is_default')
+        #数据校验
+        if not all([receiver,addr,zip_code,phone]):
+            return render(request,'dailyfresh/user_center_site.html',{'error':'数据不完整'})
+        if not re.match('^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$',phone):
+            return render(request, 'dailyfresh/user_center_site.html', {'error': '手机号码不正确'})
+        #数据处理
+        user=request.user
+        try:
+            address=Address.objects.get(user=user,is_default=True)
+        except Address.DoesNotExist:
+            address=None
+        if address:
+            is_default=False
+        else:
+            is_default=True
         #添加地址
         Address.objects.create(user=user,receiver=receiver,addr=addr,zip_code=zip_code,phone=phone,is_default=is_default)
         #返回应答,刷新页面
         return redirect(reverse('user:user_center_site'))
+class User_center_site_handler(LoginRequiredMixin,View):
+    def get(self,request):
+        a=request.GET.get('a')
+        address_id=request.GET.get('address_id')
+        if a=='1':
+            address=Address.objects.get(id=address_id)
+            address.delete()
+            return redirect(reverse('user:user_center_site'))
+        elif a=='2':
+            address = Address.objects.get(id=address_id)
+            user=request.user
+            print(user)
+            for i in Address.objects.filter(user=user):
+                i.is_default=False
+                i.save()
+            address.is_default = True
+            address.save()
+            return redirect(reverse('user:user_center_site'))
+
+
+
+
+
 
 class Cart(LoginRequiredMixin,View):
     def get(self,request):

@@ -31,11 +31,14 @@ urlpatterns = [
     url(r'^$',views.User_center_info.as_view(),name='user_center_info'),
     url(r'^user_center_order$',views.User_center_order.as_view(),name='user_center_order'),
     url(r'^user_center_site$',views.User_center_site.as_view(),name='user_center_site'),
+    url(r'^user_center_site1$',views.User_center_site1.as_view(),name='user_center_site1'),
+    url(r'^user_center_site_handler$',views.User_center_site_handler.as_view(),name='user_center_site_handler'),
     url(r'^cart$',views.Cart.as_view(),name='user_catrt'),
     url(r'^list$',views.List.as_view(),name='user_List'),
     url(r'^detail$',views.Detail.as_view(),name='user_detail'),
     url(r'^place_order$',views.Place_order.as_view(),name='place_order'),
     url(r'^loginout$',views.Loginout.as_view(),name='loginout'),
+
 
 
 ]
