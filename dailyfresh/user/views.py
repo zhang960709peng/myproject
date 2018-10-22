@@ -134,7 +134,7 @@ class Register_verify(View):
 def validate_code(request):
     # 定义变量，用于画面的背景色、宽、高
     # bgcolor = (random.randrange(256), random.randrange(256), random.randrange(256))
-    bgcolor = (255, 255, 255)
+    bgcolor = (255,255,255)
     width = 100
     height = 25
     # 创建画面对象
@@ -153,7 +153,8 @@ def validate_code(request):
     for i in range(0, 4):
         rand_str += str1[random.randrange(0, len(str1))]
 
-    # 保存到sesison
+
+    #保存到sesison
     request.session["validate_code"] = rand_str
 
     # 构造字体对象
@@ -162,16 +163,16 @@ def validate_code(request):
     for i in range(4):
         # 构造字体颜色
         fontcolor = (255, random.randrange(0, 255), random.randrange(0, 255))
-        draw.text((5 + 23 * i, 2), rand_str[i], font=font, fill=fontcolor)
+        draw.text((5+23*i, 2), rand_str[i], font=font, fill=fontcolor)
 
     # 释放画笔
     del draw
+
     buf = BytesIO()
     # 将图片保存在内存中，文件类型为png
     im.save(buf, 'png')
     # 将内存中的图片数据返回给客户端，MIME类型为图片png
     return HttpResponse(buf.getvalue(), 'image/png')
-
 
 def email(request):
     email = '1430453115@qq.com'

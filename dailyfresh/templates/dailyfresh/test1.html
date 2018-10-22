@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test1.html</title>
+</head>
+<body>
+<span>{{ goodstyle_list }}</span>
+<ul>
+    {% for i in goodstyle_list %}
+        <li>
+            <ul>
+                <li>{{ i.name }}</li>
+                <li><img src="{{ i.image.url }}"></li>
+            </ul>
+        </li>
+    {% endfor %}
+
+</ul>
+</body>
+</html>

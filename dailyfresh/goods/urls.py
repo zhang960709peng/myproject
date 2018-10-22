@@ -19,5 +19,6 @@ from goods import views
 
 urlpatterns = [
     url(r'^index$', views.Index.as_view(), name='index'),
+    url(r'^test$', views.Test.as_view(), name='test'),
 
 ]

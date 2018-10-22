@@ -142,3 +142,9 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 #上传文件存储的路径
 MEDIA_ROOT=os.path.join(BASE_DIR,"static/media")
+#FastFDS 设置自定义存储的类
+DEFAULT_FILE_STORAGE='util.fdfs.storage_util.FDFSStorage'
+#FastDFS设置客户端配置文件
+FDFS_CLIENT_CONF='util/fdfs/client.conf'
+#FastDFS设置url
+FDFS_URL='http://192.168.12.166:9999/'
