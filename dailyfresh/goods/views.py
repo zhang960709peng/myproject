@@ -48,6 +48,17 @@ class Index(LoginRequiredMixin,View):
         }
         # 返回渲染
         return render(request, 'dailyfresh/index.html', context)
+
+
+
+class Detail(LoginRequiredMixin,View):
+    def get(self,request,skuid):
+        goods=GoodsSKU.objects.get(id=skuid)
+        content={
+            'goods':goods
+        }
+        return render(request,'dailyfresh/detail.html',content)
+
 class Test(LoginRequiredMixin,View):
     def get(self,request):
         #获取商品信息种类

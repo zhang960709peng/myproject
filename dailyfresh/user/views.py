@@ -15,8 +15,7 @@ from dailyfresh import settings
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login,logout
 from django.views.decorators.csrf import csrf_exempt
-from celery_tasks.tasks import send_register_active_email
-from celery_tasks.tasks1 import send_update_password_email
+from celery_tasks import tasks
 from util.user_util import LoginRequiredMixin
 
 
@@ -73,7 +72,7 @@ class Register(View):
         html_message = '<h1>%s,欢迎您成为天天生鲜注册会员</h1>请点击以下链接激活您的账户<br><a href="%s">%s</a>' % (
         user_name, encryption_url, encryption_url)
 
-        send_register_active_email.delay(subject, message, sender, receiver, html_message)
+        tasks.send_register_active_email.delay(subject, message, sender, receiver, html_message)
         return render(request, 'dailyfresh/login.html')
 
 
@@ -233,7 +232,7 @@ class Update_password(View):
         html_message = '<h1>%s,欢迎您</h1>请点击以下链接修改您的密码<br><a href="%s">%s</a>' % (
             username, encryption_url, encryption_url)
 
-        send_update_password_email.delay(subject, message, sender, receiver, html_message)
+        tasks.send_update_password_email.delay(subject, message, sender, receiver, html_message)
         return redirect('user:login')
 class Update_password1(View):
     def get(self,request,token):
@@ -389,9 +388,6 @@ class Cart(LoginRequiredMixin,View):
 class List(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/list.html')
-class Detail(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request,'dailyfresh/detail.html')
 class Place_order(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/place_order.html')
