@@ -17,7 +17,8 @@ from django.contrib.auth import authenticate, login,logout
 from django.views.decorators.csrf import csrf_exempt
 from celery_tasks import tasks
 from util.user_util import LoginRequiredMixin
-
+from redis import StrictRedis
+from goods.models import GoodsSKU
 
 # Create your views here.
 class Register(View):
@@ -263,7 +264,17 @@ class User_center_info(LoginRequiredMixin,View):
             address = Address.objects.filter(user=user)
         except Address.DoesNotExist:
             address = None
-        context = {'page': '1', 'address': address}
+
+        #读取历史记录
+        #连接redis
+        conn=StrictRedis('192.168.12.166')
+        history=conn.lrange('history_%d'%user.id ,0,-1)
+        # goodsskus=GoodsSKU.objects.filter(id__in=history)
+        goodsskus=[]
+        for i in history:
+            j=GoodsSKU.objects.get(id=i)
+            goodsskus.append(j)
+        context = {'page': '1', 'address': address,'goodsskus':goodsskus}
         return render(request, 'dailyfresh/user_center_info.html', context)
 
 class User_center_order(LoginRequiredMixin,View):
@@ -385,9 +396,7 @@ class User_center_site_handler(LoginRequiredMixin,View):
 class Cart(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/cart.html')
-class List(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request,'dailyfresh/list.html')
+
 class Place_order(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/place_order.html')

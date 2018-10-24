@@ -148,3 +148,11 @@ DEFAULT_FILE_STORAGE='util.fdfs.storage_util.FDFSStorage'
 FDFS_CLIENT_CONF='util/fdfs/client.conf'
 #FastDFS设置url
 FDFS_URL='http://192.168.12.166:9999/'
+#配置缓存到redis
+CACHES = {
+    "default": {
+        "BACKEND": "redis_cache.cache.RedisCache",
+        "LOCATION": "redis://192.168.12.166:6379/4",
+        'TIMEOUT': 60,
+    },
+}

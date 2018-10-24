@@ -1,16 +1,19 @@
 {% extends 'dailyfresh/base_detail_list.html' %}
+{% load staticfiles %}
 {% block title %}详情页{% endblock title %}
 {% block main_content %}
 	<div class="breadcrumb">
 		<a href="#">全部分类</a>
 		<span>></span>
-		<a href="#">新鲜水果</a>
+		<a href="#">{{ goods.type }}</a>
 		<span>></span>
-		<a href="#">商品详情</a>
+		<a href="#">{{ goods.name }}</a>
 	</div>
 
 	<div class="goods_detail_con clearfix">
-		<div class="goods_detail_pic fl"><img src="{{ goods.image.url }}"></div>
+		<div class="goods_detail_pic fl"><img style="width: 250px;text-align: center;
+    height: 200px;
+    margin: 24px 0 0 24px;" src="{{ goods.image.url }}"></div>
 
 		<div class="goods_detail_list fr">
 			<h3>{{ goods.name }}</h3>
@@ -23,9 +26,15 @@
 				<div class="num_name fl">数 量：</div>
 				<div class="num_add fl">
 					<input type="text" class="num_show fl" value="1">
-					<a href="javascript:;" class="add fr">+</a>
-					<a href="javascript:;" class="minus fr">-</a>	
-				</div> 
+					<a href="javascript:;"id="add fr" class="add fr">+</a>
+					<a href="javascript:;" id="minus fr" class="minus fr">-</a>
+				</div>
+                <div class="goods_num clearfix">
+                    <span>其他规格:</span>
+                    {% for i in same_spu_skus %}
+                        <a href="{% url 'goods:detail' i.id %}"><span>{{ i.name }}</span></a>
+                    {% endfor %}
+                </div>
 			</div>
 			<div class="total">总价：<em>16.80元</em></div>
 			<div class="operate_btn">
@@ -40,16 +49,13 @@
 			<div class="new_goods">
 				<h3>新品推荐</h3>
 				<ul>
+                    {% for i in new_skus %}
 					<li>
-						<a href="#"><img src="../../static/images/goods/goods001.jpg"></a>
-						<h4><a href="#">进口柠檬</a></h4>
-						<div class="prize">￥3.90</div>
+						<a href="{% url 'goods:detail' i.id %} "><img src="{{ i.image.url }}"></a>
+						<h4><a href="{% url 'goods:detail' i.id %}">{{ i.name }}</a></h4>
+						<div class="prize">{{ i.price }}</div>
 					</li>
-					<li>
-						<a href="#"><img src="../../static/images/goods/goods002.jpg"></a>
-						<h4><a href="#">玫瑰香葡萄</a></h4>
-						<div class="prize">￥16.80</div>
-					</li>
+					{% endfor %}
 				</ul>
 			</div>
 		</div>
@@ -63,7 +69,7 @@
 			<div class="tab_content">
 				<dl>
 					<dt>商品详情：</dt>
-					<dd>{{ goods.goods.detail }} </dd>
+					<dd><textarea>{{ goods.goods.detail }}</textarea></dd>
 				</dl>
 			</div>
 
@@ -75,7 +81,7 @@
 {% endblock bottom %}
 {% block bottomfiles %}
 
-	<script type="text/javascript" src="../../static/js/jquery-1.12.2.js"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
 	<script type="text/javascript">
 		var $add_x = $('#add_cart').offset().top;
 		var $add_y = $('#add_cart').offset().left;
@@ -96,4 +102,13 @@
 			});
 		})
 	</script>
+    <script type="text/javascript" src='/static/tiny_mce/tiny_mce.js'></script>
+    <script type="text/javascript">
+        tinyMCE.init({
+            'mode':'textareas',
+            'theme':'simple',
+            'width':800,
+            'height':2000
+        });
+    </script>
 {% endblock bottomfiles %}

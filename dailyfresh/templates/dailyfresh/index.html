@@ -23,7 +23,7 @@
     <div class="center_con clearfix">
         <ul class="subnav fl">
             {% for i in goodstype_list %}
-                <li><a href="#model01" class="{{ i.logo }} ">{{ i.name }}</a></li>
+                <li><a href="{% url 'goods:list' i.id 1 %}"  class="{{ i.logo }} ">{{ i.name }}</a></li>
             {% endfor %}
         </ul>
         <div class="slide fl">
@@ -52,7 +52,7 @@
                         <a href="{% url 'goods:detail' banner.sku.id%}">{{ banner.sku.name }}</a>
                     {% endfor %}
                 </div>
-                <a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
+                <a href="{% url 'goods:list' i.id 1 %}" class="goods_more fr" id="fruit_more">查看更多 ></a>
             </div>
 
             <div class="goods_con clearfix">

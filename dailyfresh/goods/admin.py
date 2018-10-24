@@ -10,7 +10,7 @@ class BaseAdmin(admin.ModelAdmin):
         # #发出任务,让celery worker重新生成首页静态页
         from celery_tasks.tasks import task_generate_static_index
         task_generate_static_index.delay()
-        # cache.delete("cache_index")
+        cache.delete("cache_index")
         # print("save_model....")
 
     def delete_model(self, request, obj):
@@ -20,7 +20,7 @@ class BaseAdmin(admin.ModelAdmin):
         # #发出任务,让celery worker重新生成首页静态页
         from celery_tasks.tasks import task_generate_static_index
         task_generate_static_index.delay()
-        # cache.delete("cache_index")
+        cache.delete("cache_index")
 class GoodsTypeAdmin(BaseAdmin):
     pass
 class GoodsAdmin(BaseAdmin):
