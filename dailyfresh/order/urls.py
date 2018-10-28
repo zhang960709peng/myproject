@@ -15,13 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from order.views import *
+
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r"^user/", include("user.urls", namespace="user")),
-    url(r"^goods/", include("goods.urls", namespace="goods")),
-    url(r'^tinymce/', include('tinymce.urls')),
-    url(r'^search/', include('haystack.urls')),
-    url(r"^cart/",include('cart.urls',namespace='cart')),
-    url(r"^order/",include('order.urls',namespace='order'))
+    url(r'^place$', OrderPlaceView.as_view(), name='palce'),#提交订单页面显示
+    url(r'^commit$',OrderCommitView.as_view(),name='commit')#订单创建
+
 ]
