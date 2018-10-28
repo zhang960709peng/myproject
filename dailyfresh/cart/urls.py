@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from cart.views import *
+
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r"^user/", include("user.urls", namespace="user")),
-    url(r"^goods/", include("goods.urls", namespace="goods")),
-    url(r'^tinymce/', include('tinymce.urls')),
-    url(r'^search/', include('haystack.urls')),
-    url(r"^cart/",include('cart.urls',namespace='cart'))
+    url(r'^add$', CartAddView.as_view(), name='add'),#购物车记录添加
+    url(r'^$', CartInfoView.as_view(), name='show'),#购物车页面显示
+    url(r'^update$', CartUpdateView.as_view(), name='update'),#购物车记录 更新
+    url(r'^delete$', CartDetleView.as_view(), name='delete'),#购物车记录删除
+    url(r'^count$', CartCountView.as_view(), name='count'),#获取购物车数量
+
 ]

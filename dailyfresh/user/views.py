@@ -387,16 +387,6 @@ class User_center_site_handler(LoginRequiredMixin,View):
             address.is_default = True
             address.save()
             return redirect(reverse('user:user_center_site'))
-
-
-
-
-
-
-class Cart(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request,'dailyfresh/cart.html')
-
 class Place_order(LoginRequiredMixin,View):
     def get(self,request):
         return render(request,'dailyfresh/place_order.html')

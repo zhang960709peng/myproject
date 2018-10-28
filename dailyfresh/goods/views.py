@@ -19,6 +19,7 @@ from  goods.models import *
 from django.core.cache import cache
 from redis import StrictRedis
 from django.core.paginator import Paginator
+from cart.views import get_cart_count
 # Create your views here.
 class Index(LoginRequiredMixin,View):
     def get(self,request):
@@ -43,7 +44,7 @@ class Index(LoginRequiredMixin,View):
                 'IndexPromotionBanner_list':IndexPromotionBanner_list,
             }
             cache.set('cache_index',context,3600)
-        cart_count = 0
+        cart_count = get_cart_count(request.user)
         context.update(cart_count=cart_count)
         # 返回渲染
         return render(request, 'dailyfresh/index.html', context)
@@ -76,7 +77,7 @@ class Detail(LoginRequiredMixin,View):
             #只保存用户最新浏览的5条信息
             conn.ltrim(history_key,0,4)
         #获取用户购物车中的商品的数目
-        cart_count=0
+        cart_count = get_cart_count(request.user)
         content={
             'types':types,
             'goods':goods,
@@ -132,7 +133,8 @@ class List(LoginRequiredMixin,View):
         #获取新品信息
         new_skus=GoodsSKU.objects.filter(type=type).order_by('-create_time')[:2]
         #获取用户购物车商品的数目
-        cart_count=0
+
+        cart_count=get_cart_count(request.user)
         #组织模板上下文
         context={
             'type':type,'types':types,
@@ -144,3 +146,5 @@ class List(LoginRequiredMixin,View):
         }
         #使用模板
         return render(request,'dailyfresh/list.html',context)
+def query(request):
+    return render(request,'search/query.html')
