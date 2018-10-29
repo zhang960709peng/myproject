@@ -9,6 +9,8 @@ from django.http import JsonResponse
 from order.models import OrderInfo ,OrderGoods
 from datetime import datetime
 from django.db import transaction
+from alipay import AliPay
+import os
 # Create your views here.
 class OrderPlaceView(LoginRequiredMixin,View):
     '''提交订单页面显示'''
@@ -134,7 +136,7 @@ class OrderCommitView(LoginRequiredMixin,View):
                     #商品不存在
                     transaction.savepoint_rollback(save_id)
                     return JsonResponse({'res': 4, 'errmsg': '商品不存在'})
-    
+
                 import time
                 time.sleep(10)
                 #从redis中获取用户要购买的商品的数量
@@ -173,5 +175,104 @@ class OrderCommitView(LoginRequiredMixin,View):
 
         #返回应答
         return JsonResponse({'res': 5, 'message': '创建成功'})
+#ajax post
+#前端传递的参数:订单id(order_id)
+class OrderPayView(View):
+    '''订单支付'''
+    def post(self,request):
+        '''订单支付 '''
+        #用户是否登录
+        # 判断用户是否登录
+        user = request.user
+        if not user.is_authenticated():
+            return JsonResponse({'res': 0, 'errmsg': '用户未登录'})
+        #接受参数
+        order_id=request.POST.get('order_id')
+        #校验参数
+        if not order_id:
+            return JsonResponse({'res': 1, 'errmsg': '无效的订单id'})
+        try:
+            order=OrderInfo.objects.get(order_id=order_id,
+                                        user=user,
+                                        pay_method=3,
+                                        order_status=1,)
+        except OrderInfo.DoesNotExist:
+            return  JsonResponse({'res': 2, 'errmsg': '订单错误'})
+        #业务处理:使用python sdk调用支付宝的支付接口
+        alipay = AliPay(
+            appid="2016092000557615",#应用id
+            app_notify_url=None,#默认回调url
+            app_private_key_path=os.path.join(settings.BASE_DIR,'order/app_private_key.pem'),
+            alipay_public_key_path=os.path.join(settings.BASE_DIR,'order/alipay_pubilc_key.pem'),#支付宝的公钥,验证支付宝回传消息使用,不是你自己的公钥
+            sign_type="RSA2",#RAS或者RSA2
+            debug=True #默认False
+        )
 
+        #调用支付接口
+        #电脑网站支付,需要跳转到https://openapi.alipay.com/gateway.do?+order_string
+        total_pay=order.total_price+order.transit_price#Decimal
+        order_string=alipay.api_alipay_trade_page_pay(
+            out_trade_no=order_id,#订单id
+            total_amount=str(total_pay),#支付总金额
+            subject='天天生鲜%s'%order_id,
+            return_url=None,
+            notify_url=None #可选,不填则使用默认notif url
+        )
 
+        #返回应答
+        pay_url='https://openapi.alipaydev.com/gateway.do?'+order_string
+        return JsonResponse({'res':3,'pay_url':pay_url})
+#ajax post
+#前端传递的参数:订单id(order_id)
+class CheckPayView(View):
+    def post(self,request):
+        '''订单支付查询 '''
+        #用户是否登录
+        # 判断用户是否登录
+        user = request.user
+        if not user.is_authenticated():
+            return JsonResponse({'res': 0, 'errmsg': '用户未登录'})
+        #接受参数
+        order_id=request.POST.get('order_id')
+        print(order_id)
+        #校验参数
+        if not order_id:
+            return JsonResponse({'res': 1, 'errmsg': '无效的订单id'})
+        try:
+            order=OrderInfo.objects.get(order_id=order_id,
+                                        user=user,
+                                        pay_method=3,
+                                        order_status=1,)
+        except OrderInfo.DoesNotExist:
+            return  JsonResponse({'res': 2, 'errmsg': '订单错误'})
+        #业务处理:使用python sdk调用支付宝的支付接口
+        alipay = AliPay(
+            appid="2016092000557615",#应用id
+            app_notify_url=None,#默认回调url
+            app_private_key_path=os.path.join(settings.BASE_DIR,'order/app_private_key.pem'),
+            alipay_public_key_path=os.path.join(settings.BASE_DIR,'order/alipay_pubilc_key.pem'),#支付宝的公钥,验证支付宝回传消息使用,不是你自己的公钥
+            sign_type="RSA2",#RAS或者RSA2
+            debug=True #默认False
+        )
+        #调用支付宝的交易查询接口
+        while True:
+            response=alipay.api_alipay_trade_query(order_id)
+            code=response.get('code')
+            if code =='10000' and response.get('trade_status')=='TRADE_SUCCESS':
+                #支付成功
+                #获取支付宝交易号
+                trade_no=response.get('trade_no')
+                #跟新订单状态
+                order.trade_no=trade_no
+                order.order_status=4#待评价
+                order.save()
+                #返回结果
+                return  JsonResponse({'res':3,'message':'支付成功'})
+            elif code=='40004' or code =='10000'and response.get('trade_status')=='WAIT_BUYER_PAY':
+                #等待买家付款
+                import time
+                time.sleep(5)
+                continue
+            else:
+                #支付出错
+                return JsonResponse({'res': 4, 'errmsg': '支付失败'})
