@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '&kg+(w97uo!v9j-4@vrfo34dcxbogdxfza$-o4jkxz5102-_mk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -172,3 +172,6 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 #配置链接redis的对象
 from redis import  StrictRedis
 REDIS_CONN=StrictRedis('192.168.12.166')
+#配置收集静态文件的路径
+STATIC_ROOT='/var/www/dailyfresh/static/'
+STATIC_URL='/static/'
